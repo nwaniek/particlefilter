@@ -184,7 +184,7 @@ int main()
 {
 	constexpr size_t Nparticles = 1000;
 	Agent agent;
-	bayes::particle_filter<Nparticles, particle<Measurement, double>, double> pf;
+	bayes::particle_filter<particle<Measurement, double>, double> pf(Nparticles);
 
 	// number of iterations to loop in this demo
 	constexpr size_t Tmax = 100;

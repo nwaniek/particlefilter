@@ -28,10 +28,10 @@ struct particle {
 /*
  * the low variance resampler selects N indices out of a set of particles
  */
-template <size_t N, typename ParticleType, typename RealType = double>
+template <typename ParticleType, typename RealType = double>
 struct low_variance_resampler
 {
-	low_variance_resampler() {
+	low_variance_resampler(size_t Nparticles) : N(Nparticles) {
 		// seed the rng with a time dependent sequence
 		uint64_t seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::seed_seq seq{uint32_t(seed & 0xFFFFFFFF), uint32_t(seed >> 32)};
@@ -64,22 +64,24 @@ struct low_variance_resampler
 		return indices;
 	}
 
+	size_t N;
 	std::random_device rd;
 	std::mt19937_64 rng;
 	std::uniform_real_distribution<RealType> unif{0.0, 1.0};
 };
 
 
-template <size_t N,
+template <
 	 typename ParticleType,
 	 typename RealType = double,
-	 typename Resampler = low_variance_resampler<N, ParticleType, RealType>>
+	 typename Resampler = low_variance_resampler<ParticleType, RealType>>
 struct particle_filter
 {
+	size_t N;
 	std::vector<ParticleType> particles;
 	Resampler resampler;
 
-	particle_filter() : particles(N) {}
+	particle_filter(size_t Nparticles) : N(Nparticles), particles(N), resampler(N) {}
 
 	void move() {
 		for(auto &p : particles)
